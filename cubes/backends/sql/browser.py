@@ -179,8 +179,12 @@ class SnowflakeBrowser(AggregationBrowser):
         return record
 
     def facts(self, cell=None, fields=None, order=None, page=None,
-              page_size=None):
+              page_size=None, fact_list=None):
         """Return all facts from `cell`, might be ordered and paginated.
+
+        `fact_list` is a list of fact keys to be selected. Might be used to
+        fetch multiple facts using single query instead of multiple `fact()`
+        queries.
 
         Number of SQL queries: 1.
         """
@@ -193,6 +197,12 @@ class SnowflakeBrowser(AggregationBrowser):
         builder.denormalized_statement(cell,
                                        attributes,
                                        include_fact_key=True)
+
+        if fact_list is not None:
+            fact_key = builder.fact_key_column()
+            condition = fact_key.in_(fact_list)
+            builder.append_condition(condition)
+
         builder.paginate(page, page_size)
         order = self.prepare_order(order, is_aggregate=False)
         builder.order(order)

@@ -125,7 +125,7 @@ class Namespace(object):
 
         return all_cubes
 
-    def cube(self, name, locale=None, recursive=False):
+    def cube(self, name, locale=None, recursive=False, *args, **kwargs):
         """Return cube named `name`.
 
         If `recursive` is ``True`` then look for cube in child namespaces.
@@ -148,7 +148,7 @@ class Namespace(object):
         if not cube and recursive:
             for key, namespace in self.namespaces.items():
                 try:
-                    cube = namespace.cube(name, locale, recursive=True)
+                    cube = namespace.cube(name, locale, recursive=True, *args, **kwargs)
                 except NoSuchCubeError:
                     # Just continue with sibling
                     pass

@@ -536,7 +536,7 @@ class Workspace(object):
 
         return all_cubes
 
-    def cube(self, ref, identity=None, locale=None):
+    def cube(self, ref, identity=None, locale=None, *args, **kwargs):
         """Returns a cube with full cube namespace reference `ref` for user
         `identity` and translated to `locale`."""
 

@@ -125,7 +125,7 @@ class Namespace(object):
 
         return all_cubes
 
-    def cube(self, name, locale=None, recursive=False, *args, **kwargs):
+    def cube(self, name, locale=None, recursive=False, metaonly = False, *args, **kwargs):
         """Return cube named `name`.
 
         If `recursive` is ``True`` then look for cube in child namespaces.
@@ -135,20 +135,25 @@ class Namespace(object):
         # Find first provider that knows about the cube `name`
         for provider in self.providers:
             try:
-                cube = provider.cube(name, locale)
+                cube = provider.cube(name, locale, metaonly=metaonly, *args, **kwargs)
             except NoSuchCubeError:
                 pass
             else:
-                cube.provider = provider
-                cube.store = provider.store
-                cube.namespace = self
+                if metaonly:
+                    cube['provider'] = provider
+                    cube['store'] = provider.store
+                    cube['namespace'] = self
+                else:
+                    cube.provider = provider
+                    cube.store = provider.store
+                    cube.namespace = self
                 break
 
         # TODO: depreciate this, it is inconsistent and confusing
         if not cube and recursive:
             for key, namespace in self.namespaces.items():
                 try:
-                    cube = namespace.cube(name, locale, recursive=True, *args, **kwargs)
+                    cube = namespace.cube(name, locale, recursive=True)
                 except NoSuchCubeError:
                     # Just continue with sibling
                     pass

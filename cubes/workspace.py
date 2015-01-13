@@ -536,7 +536,7 @@ class Workspace(object):
 
         return all_cubes
 
-    def cube(self, ref, identity=None, locale=None, *args, **kwargs):
+    def cube(self, ref, identity=None, locale=None, metaonly=False, *args, **kwargs):
         """Returns a cube with full cube namespace reference `ref` for user
         `identity` and translated to `locale`."""
 
@@ -560,7 +560,11 @@ class Workspace(object):
         (ns, nsname, basename) = self.namespace.find_cube(ref)
 
         recursive = (self.lookup_method == "recursive")
-        cube = ns.cube(basename, locale=locale, recursive=recursive)
+        cube = ns.cube(basename, locale=locale, recursive=recursive, metaonly=metaonly, *args, **kwargs)
+
+        if metaonly:
+            return cube
+
 
         # TODO: use ref – full and name – relative
         # Set cube name to the full cube reference that includes namespace as

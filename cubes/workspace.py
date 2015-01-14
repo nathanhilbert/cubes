@@ -550,9 +550,12 @@ class Workspace(object):
 
         # If we have a cached cube, return it
         # See also: flush lookup
-        cube_key = (ref, identity, locale)
-        if cube_key in self._cubes:
-            return self._cubes[cube_key]
+
+        #skip cache is metaonly..coule cache metathough in the future
+        if not metaonly:
+            cube_key = (ref, identity, locale)
+            if cube_key in self._cubes:
+                return self._cubes[cube_key]
 
         # Find the namespace containing the cube – we will need it for linking
         # later

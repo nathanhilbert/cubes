@@ -558,6 +558,8 @@ class SQLStore(Store):
           `None` then all cube dimensions are used
         """
 
+        print "CREATING THE NECE"
+
         browser = SQLBrowser(cube, self, schema=schema)
 
         if browser.safe_labels:

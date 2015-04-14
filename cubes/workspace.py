@@ -525,18 +525,15 @@ class Workspace(object):
         # If we have a cached cube, return it
         # See also: flush lookup
 
-        #skip cache is metaonly..coule cache metathough in the future
-        if not metaonly:
-            cube_key = (ref, identity, locale)
-            if cube_key in self._cubes:
-                return self._cubes[cube_key]
-
         # Find the namespace containing the cube – we will need it for linking
         # later
         (namespace, provider, basename) = self.namespace.find_cube(ref)
 
 
-        cube = provider.cube(basename, locale=locale, namespace=namespace)
+        cube = provider.cube(basename, locale=locale, namespace=namespace, metaonly=metaonly)
+        if metaonly:
+            return cube
+
         cube.namespace = namespace
 
         # TODO: cube.ref -> should be ref and cube.name should be basename
@@ -552,11 +549,10 @@ class Workspace(object):
             cube = cube.localized(trans)
 
 
-        if metaonly:
-            return cube
+
 
         # Cache the cube
-        self._cubes[cube_key] = cube
+        self._cubes[ref] = cube
 
         return cube
 

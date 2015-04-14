@@ -510,7 +510,7 @@ class Workspace(object):
 
         return all_cubes
 
-    def cube(self, ref, identity=None, locale=None):
+    def cube(self, ref, identity=None, locale=None, metaonly=False, *args, **kwargs):
         """Returns a cube with full cube namespace reference `ref` for user
         `identity` and translated to `locale`."""
 
@@ -524,17 +524,20 @@ class Workspace(object):
 
         # If we have a cached cube, return it
         # See also: flush lookup
-        cube_key = (ref, identity, locale)
-        if cube_key in self._cubes:
-            return self._cubes[cube_key]
+
+        #skip cache is metaonly..coule cache metathough in the future
+        if not metaonly:
+            cube_key = (ref, identity, locale)
+            if cube_key in self._cubes:
+                return self._cubes[cube_key]
 
         # Find the namespace containing the cube – we will need it for linking
         # later
         (namespace, provider, basename) = self.namespace.find_cube(ref)
 
+
         cube = provider.cube(basename, locale=locale, namespace=namespace)
         cube.namespace = namespace
-        cube.store = provider.store
 
         # TODO: cube.ref -> should be ref and cube.name should be basename
         cube.basename = basename
@@ -547,6 +550,10 @@ class Workspace(object):
             context = LocalizationContext(lookup[0])
             trans = context.object_localization("cubes", cube.name)
             cube = cube.localized(trans)
+
+
+        if metaonly:
+            return cube
 
         # Cache the cube
         self._cubes[cube_key] = cube

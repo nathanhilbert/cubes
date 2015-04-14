@@ -77,6 +77,7 @@ def _store_option(config, option, default, type_=None, allowed=None,
 
     setattr(current_app.slicer, option, value)
 
+
 @slicer.record_once
 def initialize_slicer(state):
     """Create the workspace and configure the application context from the

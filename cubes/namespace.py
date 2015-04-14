@@ -140,51 +140,8 @@ class Namespace(object):
 
         return all_cubes
 
-<<<<<<< HEAD
     # TODO: change to find_dimension() analogous to the find_cube(). Let the
     # caller to perform actual dimension creation using the provider
-=======
-    def cube(self, name, locale=None, recursive=False, metaonly = False, *args, **kwargs):
-        """Return cube named `name`.
-
-        If `recursive` is ``True`` then look for cube in child namespaces.
-        """
-        cube = None
-
-        # Find first provider that knows about the cube `name`
-        for provider in self.providers:
-            try:
-                cube = provider.cube(name, locale, metaonly=metaonly, *args, **kwargs)
-            except NoSuchCubeError:
-                pass
-            else:
-                if metaonly:
-                    cube['provider'] = provider
-                    cube['store'] = provider.store
-                    cube['namespace'] = self
-                else:
-                    cube.provider = provider
-                    cube.store = provider.store
-                    cube.namespace = self
-                break
-
-        # TODO: depreciate this, it is inconsistent and confusing
-        if not cube and recursive:
-            for key, namespace in self.namespaces.items():
-                try:
-                    cube = namespace.cube(name, locale, recursive=True)
-                except NoSuchCubeError:
-                    # Just continue with sibling
-                    pass
-                else:
-                    break
-
-        if not cube:
-            raise NoSuchCubeError("Unknown cube '%s'" % str(name), name)
-
-        return cube
-
->>>>>>> state/arb_vars
     def dimension(self, name, locale=None, templates=None, local_only=False):
         dim = None
 

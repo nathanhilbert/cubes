@@ -109,7 +109,7 @@ class ValueCoalescingFunction(AggregateFunction):
         SQLAlchemy expression.  Default implementation coalesces to zero 0."""
         # TODO: use measure's missing value (we need to get the measure object
         # somehow)
-        return sql.functions.coalesce(value, 0)
+        return sql.functions.coalesce(value, None)
 
 
 class SummaryCoalescingFunction(AggregateFunction):
@@ -117,7 +117,7 @@ class SummaryCoalescingFunction(AggregateFunction):
         """Coalesce the aggregated value of `aggregate`. `value` is a
         SQLAlchemy expression.  Default implementation does nothing."""
         # TODO: use aggregates's missing value
-        return sql.functions.coalesce(value, 0)
+        return sql.functions.coalesce(value, None)
 
 
 class GenerativeFunction(AggregateFunction):

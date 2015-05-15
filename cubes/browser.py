@@ -1121,7 +1121,7 @@ def levels_from_drilldown(cell, drilldown):
                                      "Can not determine implicit next level."
                                      % (hier, dim, cut_hierarchy))
 
-            if depth >= len(hier):
+            if depth > len(hier):
                 raise HierarchyError("Hierarchy %s in dimension %s has only "
                                      "%d levels, can not drill to %d" %
                                      (hier, dim, len(hier), depth + 1))

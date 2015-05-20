@@ -1,7 +1,7 @@
 import sys
 from setuptools import setup, find_packages
 
-requirements = ["python-dateutil", "jsonschema"]
+requirements = ["python-dateutil", "jsonschema", "xlsxwriter"]
 
 extras = {
     'sql': 'sqlalchemy>= 0.9.0',
@@ -13,7 +13,7 @@ extras = {
 
 setup(
     name = "cubes",
-    version = '1.1',
+    version = 'DOSv.13',
 
     # Project uses reStructuredText, so ensure that the docutils get
     # installed or upgraded on the target machine

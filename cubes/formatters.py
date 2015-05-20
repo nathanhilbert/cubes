@@ -14,6 +14,9 @@ import csv
 import codecs
 import decimal
 import datetime
+import xlsxwriter
+import os
+from tempfile import NamedTemporaryFile
 
 try:
     import jinja2
@@ -28,6 +31,7 @@ __all__ = [
     "HTMLCrossTableFormatter",
     "SlicerJSONEncoder",
     "csv_generator",
+    "xls_generator",
     "JSONLinesGenerator",
 ]
 
@@ -101,11 +105,66 @@ def csv_generator_p3(records, fields, include_header=True, header=None,
 
         yield _row_string(row)
 
+def xls_generator_p2(records, fields, include_header=True, header=None):
+
+    def _row_string(row):
+        writer.writerow(row)
+        # Fetch UTF-8 output from the queue ...
+        data = queue.getvalue()
+        data = compat.to_unicode(data)
+        # ... and reencode it into the target encoding
+        data = encoder.encode(data)
+
+        return data
+
+    #outputfile = NamedTemporaryFile(delete=False, dir=FILE_UPLOAD_TEMP_DIR)
+    #might need temporary file
+    outputfile = NamedTemporaryFile(delete=False)
+    workbook = xlsxwriter.Workbook(outputfile.name)
+    worksheet = workbook.add_worksheet('resultset')
+
+    row = 0
+    if include_header:
+        head_column = 0
+        for head in header:
+            worksheet.write(row, head_column, head)
+            head_column +=1
+        row = 1
+
+
+    for record in records:
+        column = 0 
+        for field in fields:
+            value = record.get(field)
+            if isinstance(value, compat.string_type):
+                worksheet.write(row, column, value.encode("utf-8"))
+            elif value is not None:
+                worksheet.write(row, column, compat.text_type(value))
+            else:
+                worksheet.write(row, column, None)
+            column +=1
+        row +=1
+
+    workbook.close()
+    namedfile = outputfile.name
+    outputfile.close()
+    outputstream = ""
+    with open(namedfile, 'rb') as f:
+        outputstream = f.read()
+
+    os.remove(namedfile)
+
+
+    return outputstream
+
+
 
 if compat.py3k:
     csv_generator = csv_generator_p3
+    xls_generator = None
 else:
     csv_generator = csv_generator_p2
+    xls_generator = xls_generator_p2
 
 
 class JSONLinesGenerator(object):
@@ -386,4 +445,32 @@ class CSVFormatter(Formatter):
         rows = [compat.to_str(row) for row in generator]
         output = "".join(rows)
         return output
+
+
+
+
+class XLSFormatter(Formatter):
+    def format(self, cube, result, onrows=None, oncolumns=None, aggregates=None,
+               aggregates_on=None):
+
+        if any([onrows, oncolumns]):
+            raise ArgumentError("Column/row layout options are not supported")
+
+        header = []
+        for l in result.labels:
+            # TODO: add a little bit of polish to this
+            if l == SPLIT_DIMENSION_NAME:
+                header.append('Matches Filters')
+            else:
+                header += [attr.label or attr.name
+                           for attr in cube.get_attributes([l], aggregated=True)]
+
+        fields = result.labels
+        output_string = xls_generator_p2(result,
+                                  fields,
+                                  include_header=bool(header),
+                                  header=header)
+
+        return output_string
+
 

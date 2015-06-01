@@ -107,18 +107,16 @@ def csv_generator_p3(records, fields, include_header=True, header=None,
 
 def xls_generator_p2(records, fields, include_header=True, header=None):
 
-    def _row_string(row):
-        writer.writerow(row)
-        # Fetch UTF-8 output from the queue ...
-        data = queue.getvalue()
+    def _value_converter(data):
         data = compat.to_unicode(data)
         # ... and reencode it into the target encoding
-        data = encoder.encode(data)
+        #data = encoder.encode(data)
 
         return data
 
     #outputfile = NamedTemporaryFile(delete=False, dir=FILE_UPLOAD_TEMP_DIR)
     #might need temporary file
+    #encoder = codecs.getincrementalencoder("utf-8")()
     outputfile = NamedTemporaryFile(delete=False)
     workbook = xlsxwriter.Workbook(outputfile.name)
     worksheet = workbook.add_worksheet('resultset')
@@ -127,7 +125,7 @@ def xls_generator_p2(records, fields, include_header=True, header=None):
     if include_header:
         head_column = 0
         for head in header:
-            worksheet.write(row, head_column, head)
+            worksheet.write(row, head_column, _value_converter(head))
             head_column +=1
         row = 1
 
@@ -137,7 +135,7 @@ def xls_generator_p2(records, fields, include_header=True, header=None):
         for field in fields:
             value = record.get(field)
             if isinstance(value, compat.string_type):
-                worksheet.write(row, column, value.encode("utf-8"))
+                worksheet.write(row, column, _value_converter(value))
             elif value is not None:
                 worksheet.write(row, column, compat.text_type(value))
             else:

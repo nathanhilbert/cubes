@@ -1115,11 +1115,12 @@ def levels_from_drilldown(cell, drilldown):
                 cut_hierarchy = hier
                 depth = 0
 
-            if cut_hierarchy != hier:
-                raise HierarchyError("Cut hierarchy %s for dimension %s is "
-                                     "different than drilldown hierarchy %s. "
-                                     "Can not determine implicit next level."
-                                     % (hier, dim, cut_hierarchy))
+            #should check hierarchies as drilldowns
+            # if cut_hierarchy != hier:
+            #     raise HierarchyError("Cut hierarchy %s for dimension %s is "
+            #                          "different than drilldown hierarchy %s. "
+            #                          "Can not determine implicit next level."
+            #                          % (hier, dim, cut_hierarchy))
 
             if depth > len(hier):
                 raise HierarchyError("Hierarchy %s in dimension %s has only "

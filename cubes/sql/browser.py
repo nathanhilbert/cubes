@@ -122,7 +122,7 @@ class SQLBrowser(AggregationBrowser):
             self.connectable = store
 
             metadata = kwargs.get("metadata",
-                                  sqlalchemy.MetaData(bind=self.connectable))
+                                  sqlalchemy.MetaData())
 
         # Options
         # -------
@@ -181,7 +181,8 @@ class SQLBrowser(AggregationBrowser):
                                fact=fact_name,
                                joins=joins,
                                schema=naming.schema,
-                               tables=tables)
+                               tables=tables,
+                               connectable=self.connectable)
 
         # Extract hierarchies
         # -------------------

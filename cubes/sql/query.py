@@ -332,7 +332,7 @@ class StarSchema(object):
     """
 
     def __init__(self, label, metadata, mappings, fact, fact_key='id',
-                 joins=None, tables=None, schema=None):
+                 joins=None, tables=None, schema=None, connectable=None):
 
         # TODO: expectation is, that the snowlfake is already localized, the
         # owner of the snowflake should generate one snowflake per locale.
@@ -349,6 +349,7 @@ class StarSchema(object):
         self.joins = joins or []
         self.schema = schema
         self.table_expressions = tables or {}
+        self.connectable = connectable
 
         # Cache
         # -----
@@ -525,6 +526,7 @@ class StarSchema(object):
             table = sa.Table(name,
                              self.metadata,
                              autoload=True,
+                             autoload_with=self.connectable,
                              schema=coalesced_schema)
 
         except sa.exc.NoSuchTableError:
